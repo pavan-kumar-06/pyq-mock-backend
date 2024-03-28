@@ -1,0 +1,24 @@
+{
+  "name": "pyq-mock-backend",
+  "version": "1.0.0",
+  "description": "Backend for pyq mock test",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pavan-kumar-nandamuri/pyq-mock-backend.git"
+  },
+  "keywords": [
+    "backend",
+    "pyq",
+    "mock-test"
+  ],
+  "author": "Pavan Kumar Nandamuri",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pavan-kumar-nandamuri/pyq-mock-backend/issues"
+  },
+  "homepage": "https://github.com/pavan-kumar-nandamuri/pyq-mock-backend#readme"
+}
