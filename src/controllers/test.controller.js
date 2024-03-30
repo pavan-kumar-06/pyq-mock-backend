@@ -13,6 +13,7 @@ import { Test } from "../models/test.models.js";
 export {
     createTest,
     getAllTests,
+    getTestById,
     updateTest,
     deleteTest
 }
