@@ -1,1 +1,1 @@
-export const DB_NAME = "pyq"
+export const DB_NAME = "pyq-mock-backend"

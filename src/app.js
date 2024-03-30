@@ -9,10 +9,17 @@ app.use(cors({
     credentials: true
 }));
 
-app.use(express.json({limit: "20kb"}));
+app.use(express.json({limit: "500kb"}));
 app.use(express.urlencoded({extended: true, limit: "20kb"}));
 app.use(express.static("public"));
 app.use(cookieParser());
 
+//routes import
+import adminRouter from "./routes/admin.routes.js"
 
-export {app};
+//routes declaration
+app.use("/api/v1/admin", adminRouter)
+
+// http://localhost:8000/api/v1/users/register
+
+export { app }
