@@ -11,6 +11,7 @@ import { College } from "../models/college.models.js";
 export {
     createCollege,
     getAllColleges,
-    updateCollege,
-    deleteCollege
+    getCollegeById,
+    updateCollegeById,
+    deleteCollegeById
 }

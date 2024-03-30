@@ -16,9 +16,13 @@ app.use(cookieParser());
 
 //routes import
 import adminRouter from "./routes/admin.routes.js"
+import collegeRouter from "./routes/college.routes.js"
+import testRouter from "./routes/test.routes.js"
 
 //routes declaration
 app.use("/api/v1/admin", adminRouter)
+app.use("/api/v1/college", collegeRouter) 
+app.use("/api/v1/test", testRouter) 
 
 // http://localhost:8000/api/v1/users/register
 
