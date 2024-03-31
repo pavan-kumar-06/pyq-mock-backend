@@ -104,10 +104,10 @@ const deleteTestById = asyncHandler(async (req, res) =>{
     // Extract the URLs of all images associated with the test
     const imageUrls = [];
     test.questions.forEach(question => {
-        if (question.questionFormat === 'image') {
+        if (question && question.questionFormat === 'image' && question.question) {
             imageUrls.push(question.question);
         }
-        if (question.solutionFormat === 'image') {
+        if (question && question.solutionFormat === 'image' && question.question) {
             imageUrls.push(question.solution);
         }
     });
@@ -115,7 +115,7 @@ const deleteTestById = asyncHandler(async (req, res) =>{
     // Delete each image from the S3 bucket
     await Promise.all(imageUrls.map(async imageUrl => {
         try {
-            await deleteS3(imageUrl); // Assuming you have a deleteS3 function
+            await deleteS3(process.env.BUCKET_NAME_QUESTIONS,imageUrl); // Assuming you have a deleteS3 function
         } catch (error) {
             console.error("Error deleting image from S3:", error);
         }
