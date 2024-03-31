@@ -1,25 +1,30 @@
 import { Router } from "express";
 import {
-    createTest,
     getAllTests,
     getTestById,
-    updateTest,
-    deleteTest
-} from "../controllers/test.controller.js"
+    createTest,
+    updateTestById,
+    deleteTestById,
+    updateQuestionInTest,
+    uploadImage
+} from '../controllers/test.controller.js';
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router()
 
-//secured routes only by admin
-router.route("/")
+// Test routes
+router.route('/')
     .get(verifyJWT, getAllTests)
     .post(verifyJWT, createTest);
 
-//need to see how do i upload multiple images with different key names 
-router.route("/:id")
+router.route('/:id')
     .get(verifyJWT, getTestById)
-    .put(verifyJWT, updateTest)
-    .delete(verifyJWT, deleteTest);
+    .put(verifyJWT, updateTestById)
+    .delete(verifyJWT, deleteTestById);
 
-export default router
+// Nested route for updating a question in a test
+router.route('/:id/questions/:questionNumber')
+    .put(verifyJWT, updateQuestionInTest);
+
+export default router;

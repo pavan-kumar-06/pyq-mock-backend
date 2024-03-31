@@ -25,6 +25,9 @@ const collegeScheam = new Schema({
     state: {
         type: String
     },
+    adress: {
+        type: String
+    },
     totalStudents:{
         type: String
     }
