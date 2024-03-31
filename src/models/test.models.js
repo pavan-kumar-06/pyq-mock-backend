@@ -34,6 +34,7 @@ const questionSchema = new Schema({
     subject: {
         type: String,
         enum: ["physics", "chemistry", "biology", "maths"], // Add more subjects if needed
+        required: true
     }
     //in future we can add chapter and topic as well
 });
@@ -56,6 +57,17 @@ const testSchema = new Schema({
     testDuration: {
         type: Number,
         required: true
+    },
+    totalQuestions: {
+        type: Number,
+        required: true,
+        validate: {
+            validator: function(value) {
+                // Limit totalQuestions to be between 1 and 300
+                return value >= 1 && value <= 300;
+            },
+            message: 'Total questions must be between 1 and 300'
+        }
     },
     questions: [questionSchema]
 }, {timestamps: true})
