@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadS3 , deleteS3} from "../utils/s3.js";
 import { uuid } from 'uuidv4';
 import { Test } from "../models/test.models.js";
+import { basename } from 'path';
 
 const getAllTests = asyncHandler(async (req, res) => {
     // Fetch all tests from the database, excluding the 'questions' field
@@ -194,6 +195,39 @@ const uploadImage = asyncHandler(async(req, res) => {
     )
 })
 
+const deleteImage = asyncHandler(async(req, res) => {
+    const bucketName = process.env.BUCKET_NAME_QUESTIONS
+
+    //TODO: delete old image - assignment
+    const {url} = req.body;
+    const file =  basename(url);
+    // console.log(file);
+
+    const photo = await deleteS3(bucketName,file)
+    // console.log(photo)
+    // if (!photo.ETag) {
+    //     throw new ApiError(400, "Error while uploading on photo")
+    // }
+
+    // const user = await User.findByIdAndUpdate(
+    //     req.user?._id,
+    //     {
+    //         $set:{
+    //             photo: photo.url
+    //         }
+    //     },
+    //     {new: true}
+    // ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, 
+            "Image deleted successfully"
+        )
+    )
+})
+
 export {
     getAllTests,
     getTestById,
@@ -201,5 +235,6 @@ export {
     updateTestById,
     deleteTestById,
     updateQuestionInTest,
-    uploadImage
+    uploadImage,
+    deleteImage
 }
