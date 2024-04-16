@@ -1,12 +1,12 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadS3 } from "../utils/s3.js";
+import { uploadS3, deleteS3 } from "../utils/s3.js";
 import jwt from "jsonwebtoken"
 import { uuid } from 'uuidv4';
 import { Admin } from "../models/admin.models.js";
 
-// const uploadPhoto = asyncHandler(async(req, res) => {
+// const uploadImage = asyncHandler(async(req, res) => {
 //     // console.log(req.file)
 //     const localPath = req.file?.path
 //     const bucketName = process.env.BUCKET_NAME_QUESTIONS
@@ -41,7 +41,45 @@ import { Admin } from "../models/admin.models.js";
 //     return res
 //     .status(200)
 //     .json(
-//         new ApiResponse(200, "Avatar image updated successfully")
+//         new ApiResponse(200, 
+//             {
+//                 url: process.env.CLOUDFRONT_DISTRIBUTION_URL+fileName, 
+//             },
+//             "Image updated successfully"
+//         )
+//     )
+// })
+
+// const deleteImage = asyncHandler(async(req, res) => {
+//     const bucketName = process.env.BUCKET_NAME_QUESTIONS
+
+//     //TODO: delete old image - assignment
+//     const {url} = req.body;
+
+//     console.log(url);
+
+//     const photo = await deleteS3(bucketName,url)
+//     console.log(photo)
+//     // if (!photo.ETag) {
+//     //     throw new ApiError(400, "Error while uploading on photo")
+//     // }
+
+//     // const user = await User.findByIdAndUpdate(
+//     //     req.user?._id,
+//     //     {
+//     //         $set:{
+//     //             photo: photo.url
+//     //         }
+//     //     },
+//     //     {new: true}
+//     // ).select("-password")
+
+//     return res
+//     .status(200)
+//     .json(
+//         new ApiResponse(200, 
+//             "Image deleted successfully"
+//         )
 //     )
 // })
 
@@ -60,52 +98,52 @@ const generateAccessAndRefereshTokens = async(userId) =>{
     }
 }
 
-// const registerAdmin = asyncHandler( async (req, res) => {
-//     // get user details from frontend
-//     // validation - not empty
-//     // check if user already exists: username, email
-//     // check for images, check for avatar
-//     // upload them to cloudinary, avatar
-//     // create user object - create entry in db
-//     // remove password and refresh token field from response
-//     // check for user creation
-//     // return res
+const registerAdmin = asyncHandler( async (req, res) => {
+    // get user details from frontend
+    // validation - not empty
+    // check if user already exists: username, email
+    // check for images, check for avatar
+    // upload them to cloudinary, avatar
+    // create user object - create entry in db
+    // remove password and refresh token field from response
+    // check for user creation
+    // return res
 
 
-//     const { username, password } = req.body
-//     console.log(username,password);
+    const { username, password } = req.body
+    console.log(username,password);
 
-//     if (
-//         [username, password].some((field) => field?.trim() === "")
-//     ) {
-//         throw new ApiError(400, "All fields are required")
-//     }
+    if (
+        [username, password].some((field) => field?.trim() === "")
+    ) {
+        throw new ApiError(400, "All fields are required")
+    }
 
-//     const existedAdmin = await Admin.findOne({
-//         username
-//     })
+    const existedAdmin = await Admin.findOne({
+        username
+    })
 
-//     if (existedAdmin) {
-//         throw new ApiError(409, "Admin with username already exists")
-//     }   
+    if (existedAdmin) {
+        throw new ApiError(409, "Admin with username already exists")
+    }   
 
-//     const admin = await Admin.create({
-//         password,
-//         username: username.toLowerCase()
-//     })
+    const admin = await Admin.create({
+        password,
+        username: username.toLowerCase()
+    })
 
-//     const createdAdmin = await Admin.findById(admin._id).select(
-//         "-password -refreshToken"
-//     )
+    const createdAdmin = await Admin.findById(admin._id).select(
+        "-password -refreshToken"
+    )
 
-//     if (!createdAdmin) {
-//         throw new ApiError(500, "Something went wrong while registering the admin")
-//     }
+    if (!createdAdmin) {
+        throw new ApiError(500, "Something went wrong while registering the admin")
+    }
 
-//     return res.status(201).json(
-//         new ApiResponse(200, createdAdmin, "Admin registered Successfully")
-//     )
-// } )
+    return res.status(201).json(
+        new ApiResponse(200, createdAdmin, "Admin registered Successfully")
+    )
+} )
 
 const loginAdmin = asyncHandler(async (req, res) =>{
     // req body -> data
@@ -132,14 +170,17 @@ const loginAdmin = asyncHandler(async (req, res) =>{
     })
 
     if (!admin) {
-        throw new ApiError(404, "Admin does not exist")
+        return res
+        .json(new ApiResponse(401, {}, "Wrong Username"))
+    
     }
 
    const isPasswordValid = await admin.isPasswordCorrect(password)
 
    if (!isPasswordValid) {
-    throw new ApiError(401, "Invalid admin credentials")
-    }
+    return res
+    .json(new ApiResponse(401, {}, "Password Incorrect"))
+}
 
    const {accessToken, refreshToken} = await generateAccessAndRefereshTokens(admin._id)
 
@@ -158,7 +199,7 @@ const loginAdmin = asyncHandler(async (req, res) =>{
         new ApiResponse(
             200, 
             {
-                admin: loggedInAdmin, accessToken, refreshToken
+                loggedInAdmin, accessToken, refreshToken
             },
             "Admin logged In Successfully"
         )
@@ -240,8 +281,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 })
 
 export {
-    // uploadPhoto,
-    // registerAdmin,
+    registerAdmin,
     loginAdmin,
     logoutAdmin,
     refreshAccessToken,

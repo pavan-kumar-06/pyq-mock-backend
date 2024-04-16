@@ -10,8 +10,39 @@ const createCollege = asyncHandler(async (req, res) => {
 });
 
 const getAllColleges = asyncHandler(async (req, res) => {
-    const colleges = await College.find();
-    res.json(new ApiResponse(true, "Colleges retrieved successfully", colleges));
+    const page = parseInt(req.query.page) || 1; // Get page number from query parameter, default to 1
+    const limit = parseInt(req.query.limit) || 10; // Get limit from query parameter, default to 10
+
+    const facetQuery = [
+        {
+            $facet: {
+                paginatedColleges: [
+                    { $skip: (page - 1) * limit }, // Skip documents based on pagination
+                    { $limit: limit }, // Limit documents based on pagination
+                ],
+                totalCount: [
+                    { $count: "count" } // Count total number of documents
+                ]
+            }
+        }
+    ];
+
+    const result = await College.aggregate(facetQuery);
+
+    const paginatedColleges = result[0].paginatedColleges;
+    const totalCount = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
+
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Prepare response
+    const response = {
+        colleges: paginatedColleges,
+        page,
+        totalPages,
+        totalCount
+    };
+
+    res.json(new ApiResponse(true, "Colleges retrieved successfully", response));
 });
 
 const getCollegeById = asyncHandler(async (req, res) => {
