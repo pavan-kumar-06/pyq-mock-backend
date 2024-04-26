@@ -12,7 +12,7 @@ const userSchema = new Schema(
       trim: true,
       index: true,
     },
-    fullName: {
+    fullname: {
       type: String,
       required: true,
       trim: true,
