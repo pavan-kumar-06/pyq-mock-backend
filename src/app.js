@@ -22,7 +22,7 @@ import adminRouter from "./routes/admin.routes.js";
 import collegeRouter from "./routes/college.routes.js";
 import testRouter from "./routes/test.routes.js";
 import attemptRouter from "./routes/attempt.routes.js";
-import { verifyJWT } from "./middlewares/auth.middleware.js";
+import { verifyJWTAdmin } from "./middlewares/auth.middleware.js";
 import { uploadImage, deleteImage } from "./controllers/test.controller.js";
 import { upload } from "./middlewares/multer.middleware.js";
 
@@ -32,8 +32,8 @@ app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/college", collegeRouter);
 app.use("/api/v1/test", testRouter);
 app.use("/api/v1/attempt", attemptRouter);
-app.post("/api/v1/image", verifyJWT, upload.single("image"), uploadImage);
-app.delete("/api/v1/image", verifyJWT, deleteImage);
+app.post("/api/v1/image", verifyJWTAdmin, upload.single("image"), uploadImage);
+app.delete("/api/v1/image", verifyJWTAdmin, deleteImage);
 
 // http://localhost:8000/api/v1/users/register
 

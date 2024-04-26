@@ -4,7 +4,6 @@ import {
   logoutAdmin,
   registerAdmin,
 } from "../controllers/admin.controller.js";
-import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWTAdmin } from "../middlewares/auth.middleware.js";
 
 const router = Router();

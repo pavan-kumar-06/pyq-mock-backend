@@ -262,7 +262,7 @@ const uploadImage = asyncHandler(async (req, res) => {
 
   //store this url in the database
   const url = process.env.CLOUDFRONT_DISTRIBUTION_URL + fileName;
-  console.log(url);
+  // console.log(url);
 
   const photo = await uploadS3(
     localPath,
@@ -270,41 +270,40 @@ const uploadImage = asyncHandler(async (req, res) => {
     fileName,
     req.file?.mimetype
   );
-  console.log(photo);
+  // console.log(photo);
   if (!photo.ETag) {
-    throw new ApiError(400, "Error while uploading on photo");
+    return res.json(new ApiError(400, null, "Error while uploading on photo"));
   }
 
-  return res.status(200).json(new ApiResponse(200, fileName));
+  return res.json(new ApiResponse(200, url, "Image uploaded succesfully"));
 });
 
 const deleteImage = asyncHandler(async (req, res) => {
   const bucketName = process.env.BUCKET_NAME_QUESTIONS;
 
-  //TODO: delete old image - assignment
-  const { url } = req.body;
+  // Extract the image URL from the query parameters
+  const { url } = req.query;
+
+  if (!url) {
+    return res.json(new ApiResponse(400, null, "Image URL is required"));
+  }
+
   const file = basename(url);
-  // console.log(file);
 
-  const photo = await deleteS3(bucketName, file);
-  // console.log(photo)
-  // if (!photo.ETag) {
-  //     throw new ApiError(400, "Error while uploading on photo")
-  // }
-
-  // const user = await User.findByIdAndUpdate(
-  //     req.user?._id,
-  //     {
-  //         $set:{
-  //             photo: photo.url
-  //         }
-  //     },
-  //     {new: true}
-  // ).select("-password")
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, "Image deleted successfully"));
+  try {
+    const photo = await deleteS3(bucketName, file);
+    if (photo?.$metadata?.httpStatusCode > 299) {
+      return res.json(
+        new ApiResponse(500, null, "Error occurred while deleting the image")
+      );
+    }
+    return res.json(new ApiResponse(200, file, "Image deleted successfully"));
+  } catch (error) {
+    // console.error("Error deleting image:", error);
+    return res.json(
+      new ApiResponse(500, null, "Error occurred while deleting the image")
+    );
+  }
 });
 
 export {
