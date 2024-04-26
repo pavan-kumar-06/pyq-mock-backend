@@ -16,7 +16,7 @@ import { basename } from "path";
 
 const getAllTests = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Current page number, default is 1
-  const limit = parseInt(req.query.limit) || 10; // Number of items per page, default is 10
+  const limit = parseInt(req.query.limit) || 1000; // Number of items per page, default is 10
 
   // Extract the filter year from the query parameters
   const { year } = req.query;
@@ -31,7 +31,11 @@ const getAllTests = asyncHandler(async (req, res) => {
   const paginationStages = [
     {
       $facet: {
-        tests: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        tests: [
+          { $skip: (page - 1) * limit },
+          { $limit: limit },
+          { $unset: ["questions"] }, // Exclude the 'questions' field
+        ],
         totalCount: [{ $count: "value" }],
       },
     },
