@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
+// import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 // const responseSchema = new Schema({
 //     // answerSubmitted:{
@@ -62,6 +62,6 @@ const attemptSchema = new Schema(
   { timestamps: true }
 );
 
-attemptSchema.plugin(mongooseAggregatePaginate);
+// attemptSchema.plugin(mongooseAggregatePaginate);
 
 export const Attempt = mongoose.model("Attempt", attemptSchema);

@@ -1,9 +1,14 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import {
+  getAttempt,
+  updateAttempt,
+} from "../controllers/attempt.controller.js";
 
 const router = Router();
 
 //secured routes
-router.route("/").get(verifyJWT, logoutAdmin);
+router.route("/:testId").get(verifyJWT, getAttempt);
+router.route("/:attemptId").post(verifyJWT, updateAttempt);
 
 export default router;
