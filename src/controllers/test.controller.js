@@ -98,7 +98,7 @@ const getTestById = asyncHandler(async (req, res) => {
   test.questions = updatedQuestions;
 
   // Return the updated test as a response
-  res.json(new ApiResponse(true, test, "Test retrieved successfully"));
+  res.json(new ApiResponse(200, test, "Test retrieved successfully"));
 });
 
 const createTest = asyncHandler(async (req, res) => {
