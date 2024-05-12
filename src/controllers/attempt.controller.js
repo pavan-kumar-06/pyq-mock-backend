@@ -78,8 +78,23 @@ async function findScore(responses, testId) {
 }
 
 const updateAttempt = asyncHandler(async (req, res) => {
-  // Extract the attempt ID from the request parameters
-  const { attemptId } = req.params;
+  const userId = req.user?._id;
+  if (!userId) {
+    return res.json(new ApiResponse(407, null, "Error while attempt creation"));
+  }
+  const { testId } = req.params;
+
+  // Find if there is an attempt already exists
+  let attempt = await Attempt.findOne({ userId, testId });
+
+  // If the test is not found, create new attempt
+  //here i am creating new attempt once check
+  if (!attempt) {
+    attempt = await Attempt.create({
+      userId,
+      testId,
+    });
+  }
 
   // Extract responses and score from the request body
   let { responses } = req.body;
@@ -90,14 +105,6 @@ const updateAttempt = asyncHandler(async (req, res) => {
   }
 
   try {
-    // Find the attempt by its ID
-    const attempt = await Attempt.findById(attemptId);
-
-    // If the attempt is not found, return a 404 error
-    if (!attempt) {
-      return res.json(new ApiResponse(404, null, "Attempt ID does not exist"));
-    }
-
     //find score
     let score = await findScore(responses, attempt?.testId);
     // Parse score to number
