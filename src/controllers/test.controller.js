@@ -84,12 +84,10 @@ const getTestById = asyncHandler(async (req, res) => {
   // Loop through the questions array and update URLs if the format is 'image'
   const updatedQuestions = test.questions.map((question) => {
     if (question && question.questionFormat === "image") {
-      question.question =
-        process.env.CLOUDFRONT_DISTRIBUTION_URL + question.question;
+      question.question = question.question;
     }
     if (question && question.solutionFormat === "image") {
-      question.solution =
-        process.env.CLOUDFRONT_DISTRIBUTION_URL + question.solution;
+      question.solution = question.solution;
     }
     return question;
   });
@@ -200,6 +198,7 @@ const deleteTestById = asyncHandler(async (req, res) => {
 
 const updateQuestionInTest = asyncHandler(async (req, res) => {
   const { id, questionNumber } = req.params;
+  console.log(req.body);
   const {
     questionType,
     question,
@@ -212,7 +211,7 @@ const updateQuestionInTest = asyncHandler(async (req, res) => {
 
   const test = await Test.findById(id);
   // Find the question within the test based on the questionNumber
-  const questionIndex = parseInt(questionNumber) - 1;
+  const questionIndex = parseInt(questionNumber);
   if (questionIndex < 0 || questionIndex >= test.questions.length) {
     throw new ApiError(404, "Question not found in the test");
   }
@@ -232,7 +231,7 @@ const updateQuestionInTest = asyncHandler(async (req, res) => {
   const updatedTest = await Test.findByIdAndUpdate(
     id,
     {
-      $set: { [`questions.${parseInt(questionNumber) - 1}`]: updatedQuestion },
+      $set: { [`questions.${parseInt(questionNumber)}`]: updatedQuestion },
     },
     { new: true } // Return the modified document after update
   );
@@ -297,6 +296,7 @@ const deleteImage = asyncHandler(async (req, res) => {
         new ApiResponse(500, null, "Error occurred while deleting the image")
       );
     }
+    //delete from database
     return res.json(new ApiResponse(200, file, "Image deleted successfully"));
   } catch (error) {
     // console.error("Error deleting image:", error);
