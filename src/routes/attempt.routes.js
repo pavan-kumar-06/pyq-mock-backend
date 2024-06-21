@@ -8,7 +8,7 @@ import {
 const router = Router();
 
 //secured routes
-router.route("/:testId").get(verifyJWT, getAttempt);
-router.route("/:attemptId").post(verifyJWT, updateAttempt);
+// router.route("/:testId").get(verifyJWT, getAttempt);
+router.route("/:testId").post(verifyJWT, updateAttempt);
 
 export default router;

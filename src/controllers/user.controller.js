@@ -2,6 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.models.js";
+import { Attempt } from "../models/attempt.models.js";
+import mongoose from "mongoose";
 
 const generateAccessAndRefereshTokens = async (userId) => {
   try {
@@ -156,6 +158,58 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
+const getHistory = asyncHandler(async (req, res) => {
+  const userId = req?.user?._id;
+  try {
+    const attemptDetails = await Attempt.aggregate([
+      {
+        $match: { userId: new mongoose.Types.ObjectId(userId) },
+      },
+      {
+        $lookup: {
+          from: "tests",
+          localField: "testId",
+          foreignField: "_id",
+          as: "test",
+        },
+      },
+      {
+        $unwind: "$test",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $unwind: "$user",
+      },
+      {
+        $project: {
+          _id: 0,
+          responseId: "$_id",
+          testId: "$test._id",
+          testName: "$test.testName",
+          testYear: "$test.testYear",
+          score: 1,
+          // username: "$user.username",
+          // fullname: "$user.fullName",
+        },
+      },
+    ]);
+
+    return res.json(
+      new ApiResponse(201, attemptDetails, "User History fetched successfully")
+    );
+  } catch (error) {
+    console.error("Error while fetching attempt details:", error);
+    return res.json(new ApiResponse(500, null, "Error fetching history"));
+  }
+});
+
 // const refreshAccessToken = asyncHandler(async (req, res) => {
 //   const incomingRefreshToken =
 //     req.cookies.refreshToken || req.body.refreshToken;
@@ -204,4 +258,4 @@ const logoutUser = asyncHandler(async (req, res) => {
 //   }
 // });
 
-export { registerUser, loginUser, logoutUser };
+export { registerUser, loginUser, logoutUser, getHistory };
