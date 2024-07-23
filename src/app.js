@@ -35,6 +35,20 @@ app.use("/api/v1/attempt", attemptRouter);
 app.post("/api/v1/image", verifyJWTAdmin, upload.single("image"), uploadImage);
 app.delete("/api/v1/image", verifyJWTAdmin, deleteImage);
 
+app.get("/health", async (_req, res, _next) => {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: "OK",
+    timestamp: Date.now(),
+  };
+  try {
+    res.send(healthcheck);
+  } catch (error) {
+    healthcheck.message = error;
+    res.status(503).send();
+  }
+});
+
 // http://localhost:8000/api/v1/users/register
 
 export { app };
