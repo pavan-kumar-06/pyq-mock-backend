@@ -84,10 +84,12 @@ const getTestById = asyncHandler(async (req, res) => {
   // Loop through the questions array and update URLs if the format is 'image'
   const updatedQuestions = test.questions.map((question) => {
     if (question && question.questionFormat === "image") {
-      question.question = question.question;
+      question.question =
+        process.env.CLOUDFRONT_DISTRIBUTION_URL + "/" + question.question;
     }
     if (question && question.solutionFormat === "image") {
-      question.solution = question.solution;
+      question.solution =
+        process.env.CLOUDFRONT_DISTRIBUTION_URL + "/" + question.solution;
     }
     return question;
   });
