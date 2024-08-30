@@ -35,7 +35,7 @@ app.use("/api/v1/attempt", attemptRouter);
 app.post("/api/v1/image", verifyJWTAdmin, upload.single("image"), uploadImage);
 app.delete("/api/v1/image", verifyJWTAdmin, deleteImage);
 
-app.get("/health", async (_req, res, _next) => {
+app.get("/api/health", async (_req, res, _next) => {
   const healthcheck = {
     uptime: process.uptime(),
     message: "OK",
